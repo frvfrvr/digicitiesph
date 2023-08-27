@@ -134,7 +134,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 
 	return talent_df, infra_df, business_df, digital_df
 
-@st.cache_data
+@st.cache_data(persist=True)
 def preview(selected_province, mode):
 
 	driver = use_driver()
@@ -219,7 +219,7 @@ def preview(selected_province, mode):
 	return talent_table, infra_table, business_table, digital_table
 
 
-@st.cache_data
+@st.cache_data(persist=True)
 def extract(selected_province, mode: str, filetype: str):
 
 	talent_df, infra_df, business_df, digital_df = preview(selected_province, mode)
