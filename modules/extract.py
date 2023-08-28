@@ -239,11 +239,13 @@ def preview(selected_province, mode):
 		for city_name in cities:
 			logging.info(f"Next iteration: {city_name}")
 			talent_df, infra_df, business_df, digital_df = scrape_each_city(city_name, driver, mode, [talent_df, infra_df, business_df, digital_df], [talent_columns, infra_columns, business_columns, digital_columns])
-				
+		
+
 		talent_table = talent_df
 		infra_table = infra_df
 		business_table = business_df
 		digital_table = digital_df
+		logging.info(f"Finished extracting {selected_province}")
 	elif mode == "advanced":
 		pass
 

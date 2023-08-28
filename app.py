@@ -1,6 +1,7 @@
 from modules.extract import preview, extract
 import streamlit as st
 import datetime
+import time
 
 def main():
     # import list of provinces from txt file "provinces_list.txt"
@@ -50,9 +51,11 @@ def main():
                      """)
         
         if st.button('Preview', disabled=not preview_disabled, type='primary'):
-            st.info(f'Extracting data from {selected_province}, please wait...')
+            status_notif = st.empty()
+            status_notif.info(f'Extracting data from {selected_province}, please wait...')
+            start_time = time.time()
             talent_table, infra_table, business_table, digital_table = preview(selected_province, selected_mode.lower())
-            
+            status_notif.success(f'{selected_province} province simple extraction finished! ({start_time - time.time()} seconds)', icon="✅")
             talent_tab, infra_tab, business_tab, digital_tab = st.tabs(["Talent", "Infrastructure", "Business Environment", "Digital Parameters"])
             
             with talent_tab:
