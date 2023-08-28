@@ -14,6 +14,8 @@ import io
 import time
 import requests
 
+logging.basicConfig()
+
 def use_driver():
 	## Setup chrome options
 	chrome_options = Options()
@@ -45,6 +47,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	"""
 	
 	print(city_name, " is being scraped")
+	logging.info(f"{city_name} is being scraped")
 	start_time = time.time()
 	selected_mode = mode.lower()
 	talent_df = dfs[0]
@@ -65,9 +68,10 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 		w.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
 	except TimeoutException:
 		print("Timeout happened no page load")
+	logging.info(f"Driver redirected to: http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/")
 
 	#  obtain population by XPATH
-
+	logging.info(f"Obtaining population data for {city_name}")
 	#  Add population
 	city_population = driver.find_elements(By.CLASS_NAME, 'score')[0].text.replace(',', '')
 	time.sleep(1)
@@ -80,9 +84,10 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	extract_vars = {}
  
 	#  Talent table
+	logging.info(f"Obtaining Talent data for {city_name}")
 	if selected_mode == "simple":
 		# WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
-		driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)").click()
+		# driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)").click()
 		extract_vars["Total Graduates"] = driver.find_element(By.CSS_SELECTOR, "div:nth-child(1) > .details-overall > .score").text.replace(',', '')
 		extract_vars["Higher Education Graduates"] = driver.find_element(By.CSS_SELECTOR, "#talentAccordion1 > .card > .card-link > span").text.replace(',', '')
 		extract_vars["Technical Vocational Graduates"] = driver.find_element(By.CSS_SELECTOR, "#talentAccordion2 .collapsed > span").text.replace(',', '')
@@ -96,6 +101,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 		pass
 
 	#  Infrastructure table
+	logging.info(f"Obtaining Infrastructure data for {city_name}")
 	# WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".filter-nav > li:nth-child(2)")))
 	driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(2)").click()
 	extract_vars["Office Real Estate"] = driver.find_element(By.CSS_SELECTOR, "#infraAccordion9 .card-link > span").text
@@ -108,6 +114,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	extract_vars["Recreational and Tourist Attractions"] = driver.find_element(By.XPATH, "(//div[@id=\'infraAccordion13\']/div/a/span)[2]").text
 
 	#  Business Environment table
+	logging.info(f"Obtaining Business Environment data for {city_name}")
 	driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(3)").click()
 	extract_vars["(Cost) Minimum Wage Nonagri"] = driver.find_element(By.CSS_SELECTOR, "li:nth-child(1) > span").text.replace(',', '')
 	extract_vars["(Cost) Monthly Office Space Rental per sqm"] = driver.find_element(By.CSS_SELECTOR, "li:nth-child(2) > span").text
@@ -120,6 +127,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	extract_vars["Average Crime Solution Efficiency"] = driver.find_element(By.CSS_SELECTOR, "#businessAccordion12 span").text
 
 	#  Digital Parameters table
+	logging.info(f"Obtaining Digital Parameters data for {city_name}")
 	driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(4)").click()
 	extract_vars["Open Innovation Ecosystem"] = driver.find_element(By.CSS_SELECTOR, "#digitalAccordion11 span").text
 	extract_vars["Number of Startups"] = driver.find_element(By.CSS_SELECTOR, "#digitalAccordion13 span").text
@@ -138,12 +146,13 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 
 	end_time = time.time()
 	print(f"{city_name} took {end_time - start_time} seconds to scrape")
+	logging.info(f"{city_name} took {end_time - start_time} seconds to scrape")
 
 	return talent_df, infra_df, business_df, digital_df
 
 @st.cache_data()
 def preview(selected_province, mode):
-
+	logging.info("Preview started")
 	driver = use_driver()
 
 	# province_name for URL use
@@ -154,6 +163,7 @@ def preview(selected_province, mode):
 	url = f'http://www.digitalcitiesph.com/location-profiles/provinces/{province_name}/'
 
 	driver.get(url) 
+	logging.info(f"Driver redirected to: {url}")
 	try:
 		w = WebDriverWait(driver, 8)
 		w.until(EC.presence_of_element_located((By.CLASS_NAME, 'municipality')))
@@ -180,6 +190,7 @@ def preview(selected_province, mode):
 	
  
 	if mode == "simple":
+		logging.info("Columns for simple mode")
 		# COLUMNS
 		talent_columns = ['Total Graduates', 'Higher Education Graduates', 'Technical Vocational Graduates', 'Senior High Graduates', 'Number of Center of Excellence', 'Number of Center of Development', 'Number of Higher Education Institutions', 'Number of Technical Vocational Institutions']
 		infra_columns = ['Office Real Estate', 'Telco Infrastructure', 'Internet Bandwidth', 'Power Supply', 'Transportation Access', 'Hotel Availability', 'Hospital Beds', 'Recreational and Tourist Attractions']
@@ -195,6 +206,7 @@ def preview(selected_province, mode):
 		for i in digital_columns:
 			digital_df[i] = None
   
+		logging.info("Columns for simple mode finished")
   		# add rows to dataframe
 		# URL is currently at: 'http://www.digitalcitiesph.com/location-profiles/provinces/{province_name}/'
 		logging.info(f"URL is currently at: 'http://www.digitalcitiesph.com/location-profiles/provinces/{province_name}/'")
@@ -228,7 +240,7 @@ def preview(selected_province, mode):
 
 @st.cache_data()
 def extract(selected_province, mode: str, filetype: str):
-
+	logging.info(f"{selected_province} {filetype} {mode} Extraction started")
 	talent_df, infra_df, business_df, digital_df = preview(selected_province, mode)
 	dfs = [talent_df, infra_df, business_df, digital_df]
 	table_names = ["Talent", "Infrastructure", "Business Environment", "Digital Parameters"]
