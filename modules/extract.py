@@ -64,7 +64,6 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	city_name_URL = [word.lower() for word in city_name_URL]
 	city_name_URL = '%20'.join(city_name_URL)
 	driver.get(f'http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/')
-	
 	driver.implicitly_wait(10)
 	assert city_name in driver.title, f"Expected {city_name} in {driver.title}"
 	try:
