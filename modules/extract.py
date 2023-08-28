@@ -23,8 +23,10 @@ def use_driver():
 	chrome_options.add_argument('--ignore-ssl-errors=yes')
 	chrome_options.add_argument('--ignore-certificate-errors')
 
+	latest_chromium_ver = requests.get("https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_116").text
+
 	driver = webdriver.Chrome(service=ChromeService( 
-		ChromeDriverManager().install()), options=chrome_options) 
+		ChromeDriverManager(version=latest_chromium_ver).install()), options=chrome_options) 
 
 	return driver
 
