@@ -14,7 +14,7 @@ import io
 import time
 import requests
 
-logging.basicConfig()
+logging.basicConfig(level=logging.INFO)
 
 def use_driver():
 	## Setup chrome options
@@ -68,6 +68,8 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 		w.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
 	except TimeoutException:
 		print("Timeout happened no page load")
+		logging.info(f"{city_name} Timeout happened no page load")
+		return talent_df, infra_df, business_df, digital_df
 	logging.info(f"Driver redirected to: http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/")
 
 	#  obtain population by XPATH
