@@ -65,6 +65,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	city_name_URL = '%20'.join(city_name_URL)
 	driver.get(f'http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/')
 	driver.implicitly_wait(10)
+	time.sleep(10)
 	try:
 		w = WebDriverWait(driver, 30)
 		w.until(EC.title_contains(f"{city_name}"))
@@ -171,6 +172,7 @@ def preview(selected_province, mode):
 
 	driver.get(url)
 	driver.implicitly_wait(10) 
+	time.sleep(10)
 	logging.info(f"Driver redirected to: {url}")
 	logging.info(f"Page title: {driver.title}")
 	
