@@ -187,13 +187,13 @@ def preview(selected_province, mode):
 	# df = pd.DataFrame(columns=['province', 'city'])
  
 	# TALENT TABLE
-	talent_df = pd.DataFrame([], columns=['Province', 'City', 'Population']).set_index('Province', inplace=True)
+	talent_df = pd.DataFrame([], columns=['Province', 'City', 'Population'])
 	# INFRASTRUCTURE TABLE
-	infra_df = pd.DataFrame([], columns=['Province', 'City', 'Population']).set_index('Province', inplace=True)
+	infra_df = pd.DataFrame([], columns=['Province', 'City', 'Population'])
 	# BUSINESS ENVIRONMENT TABLE
-	business_df = pd.DataFrame([], columns=['Province', 'City', 'Population']).set_index('Province', inplace=True)
+	business_df = pd.DataFrame([], columns=['Province', 'City', 'Population'])
 	# DIGITAL PARAMETERS TABLE
-	digital_df = pd.DataFrame([], columns=['Province', 'City', 'Population']).set_index('Province', inplace=True)
+	digital_df = pd.DataFrame([], columns=['Province', 'City', 'Population'])
 	
  
 	if mode == "simple":
