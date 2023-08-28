@@ -65,14 +65,15 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	city_name_URL = '%20'.join(city_name_URL)
 	driver.get(f'http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/')
 	driver.implicitly_wait(10)
-	assert city_name in driver.title, f"Expected {city_name} in {driver.title}"
 	try:
 		w = WebDriverWait(driver, 30)
-		w.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
+		w.until(EC.title_contains(f"{city_name}"))
+		# w.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
 	except TimeoutException:
 		print("Timeout happened no page load")
 		logging.info(f"{city_name} Timeout happened no page load")
 		# return talent_df, infra_df, business_df, digital_df
+	assert city_name in driver.title, f"Expected {city_name} in {driver.title}"
 	logging.info(f"Driver redirected to: (Title: {driver.title}) http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/")
 	#  obtain population by XPATH
 	logging.info(f"Obtaining population data for {city_name}")
@@ -172,14 +173,16 @@ def preview(selected_province, mode):
 	driver.implicitly_wait(10) 
 	logging.info(f"Driver redirected to: {url}")
 	logging.info(f"Page title: {driver.title}")
-	assert selected_province in driver.title, f"Expected {selected_province} in {driver.title}"
+	
 	try:
 		w = WebDriverWait(driver, 8)
-		w.until(EC.presence_of_element_located((By.CLASS_NAME, 'municipality')))
+		w.until(EC.title_contains(f"{selected_province}"))
+		# w.until(EC.presence_of_element_located((By.CLASS_NAME, 'municipality')))
 		print("Page load happened")
 	except TimeoutException:
 		print("Timeout happened no page load")
-
+	
+	assert selected_province in driver.title, f"Expected {selected_province} in {driver.title}"
 	# print(driver.title.split()[2:])
 	preview_test = driver.title
 	preview_test += "\n"
