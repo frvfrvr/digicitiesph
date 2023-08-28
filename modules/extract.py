@@ -70,8 +70,8 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	except TimeoutException:
 		print("Timeout happened no page load")
 		logging.info(f"{city_name} Timeout happened no page load")
-		return talent_df, infra_df, business_df, digital_df
-	logging.info(f"Driver redirected to: http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/")
+		# return talent_df, infra_df, business_df, digital_df
+	logging.info(f"Driver redirected to: (Title: {driver.title}) http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/")
 
 	#  obtain population by XPATH
 	logging.info(f"Obtaining population data for {city_name}")
@@ -90,7 +90,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	logging.info(f"Obtaining Talent data for {city_name}")
 	if selected_mode == "simple":
 		# WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
-		# driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)").click()
+		driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)").click()
 		extract_vars["Total Graduates"] = driver.find_element(By.CSS_SELECTOR, "div:nth-child(1) > .details-overall > .score").text.replace(',', '')
 		extract_vars["Higher Education Graduates"] = driver.find_element(By.CSS_SELECTOR, "#talentAccordion1 > .card > .card-link > span").text.replace(',', '')
 		extract_vars["Technical Vocational Graduates"] = driver.find_element(By.CSS_SELECTOR, "#talentAccordion2 .collapsed > span").text.replace(',', '')
@@ -167,6 +167,7 @@ def preview(selected_province, mode):
 
 	driver.get(url) 
 	logging.info(f"Driver redirected to: {url}")
+	logging.info(f"Page title: {driver.title}")
 	try:
 		w = WebDriverWait(driver, 8)
 		w.until(EC.presence_of_element_located((By.CLASS_NAME, 'municipality')))
@@ -226,7 +227,7 @@ def preview(selected_province, mode):
 		# Create a list of all the cities from df
 		cities = talent_df['City'].tolist()
 		for city_name in cities:
-			logging.info(city_name)
+			logging.info(f"Next iteration: {city_name}")
 			talent_df, infra_df, business_df, digital_df = scrape_each_city(city_name, driver, mode, [talent_df, infra_df, business_df, digital_df], [talent_columns, infra_columns, business_columns, digital_columns])
 				
 		talent_table = talent_df
