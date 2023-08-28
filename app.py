@@ -6,7 +6,7 @@ import time
 def min_sec(start_time, end_time):
     minutes = round((end_time - start_time) / 60)
     seconds = round((end_time - start_time) % 60)
-    return f"{minutes if minutes > 0 else ''} minute{'s' if minutes > 1 else ''} {'and' if minutes > 0 else ''} {seconds} second{'s' if seconds > 1 else ''}"
+    return f"{minutes if minutes > 0 else ''} {'minute' if minutes > 0 else ''}{'s' if minutes > 1 else ''} {'and' if minutes > 0 else ''} {seconds} second{'s' if seconds > 1 else ''}"
 
 def main():
     # import list of provinces from txt file "provinces_list.txt"
@@ -64,7 +64,7 @@ def main():
             status_notif.info(f'Extracting data from {selected_province}, please wait...', icon="🔍")
             start_time = time.time()
             talent_table, infra_table, business_table, digital_table = preview(selected_province, selected_mode.lower())
-            status_notif.success(f'{selected_province} province simple extraction finished! ({min_sec(start_time, time.time())})', icon="✅")
+            status_notif.success(f'{selected_province} province {selected_mode} extraction finished! ({min_sec(start_time, time.time())})', icon="✅")
             talent_tab, infra_tab, business_tab, digital_tab = st.tabs(["Talent", "Infrastructure", "Business Environment", "Digital Parameters"])
             
             with talent_tab:
