@@ -12,6 +12,7 @@ import logging
 import zipfile
 import io
 import time
+import requests
 
 @st.cache_data(persist=True)
 def use_driver():
