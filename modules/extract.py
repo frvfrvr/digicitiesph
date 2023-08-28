@@ -64,6 +64,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	city_name_URL = [word.lower() for word in city_name_URL]
 	city_name_URL = '%20'.join(city_name_URL)
 	driver.get(f'http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/')
+	assert city_name in driver.title
 	driver.implicitly_wait(10)
 	try:
 		w = WebDriverWait(driver, 30)
@@ -168,6 +169,7 @@ def preview(selected_province, mode):
 	url = f'http://www.digitalcitiesph.com/location-profiles/provinces/{province_name}/'
 
 	driver.get(url)
+	assert selected_province in driver.title
 	driver.implicitly_wait(10) 
 	logging.info(f"Driver redirected to: {url}")
 	logging.info(f"Page title: {driver.title}")
