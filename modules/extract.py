@@ -26,8 +26,12 @@ def use_driver():
 
 	latest_chromium_ver = requests.get("https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_116").text
 
-	driver = webdriver.Chrome(service=ChromeService( 
-		ChromeDriverManager(url='https://googlechromelabs.github.io/chrome-for-testing/', latest_release_url='https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_116').install()), options=chrome_options) 
+	# url='https://googlechromelabs.github.io/chrome-for-testing/', 
+				# latest_release_url='https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_116'
+
+	cdm = ChromeDriverManager(driver_version=latest_chromium_ver).install()
+	
+	driver = webdriver.Chrome(service=ChromeService(cdm), options=chrome_options) 
 
 	return driver
 
