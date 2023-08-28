@@ -64,6 +64,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	city_name_URL = [word.lower() for word in city_name_URL]
 	city_name_URL = '%20'.join(city_name_URL)
 	driver.get(f'http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/')
+	driver.implicitly_wait(10)
 	try:
 		w = WebDriverWait(driver, 30)
 		w.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
@@ -72,7 +73,6 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 		logging.info(f"{city_name} Timeout happened no page load")
 		# return talent_df, infra_df, business_df, digital_df
 	logging.info(f"Driver redirected to: (Title: {driver.title}) http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/")
-
 	#  obtain population by XPATH
 	logging.info(f"Obtaining population data for {city_name}")
 	#  Add population
@@ -89,7 +89,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	#  Talent table
 	logging.info(f"Obtaining Talent data for {city_name}")
 	if selected_mode == "simple":
-		# WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
+		WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
 		driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)").click()
 		extract_vars["Total Graduates"] = driver.find_element(By.CSS_SELECTOR, "div:nth-child(1) > .details-overall > .score").text.replace(',', '')
 		extract_vars["Higher Education Graduates"] = driver.find_element(By.CSS_SELECTOR, "#talentAccordion1 > .card > .card-link > span").text.replace(',', '')
@@ -105,7 +105,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 
 	#  Infrastructure table
 	logging.info(f"Obtaining Infrastructure data for {city_name}")
-	# WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".filter-nav > li:nth-child(2)")))
+	WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(2)")))
 	driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(2)").click()
 	extract_vars["Office Real Estate"] = driver.find_element(By.CSS_SELECTOR, "#infraAccordion9 .card-link > span").text
 	extract_vars["Telco Infrastructure"] = driver.find_element(By.CSS_SELECTOR, "#infraAccordion10 span").text
@@ -118,6 +118,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 
 	#  Business Environment table
 	logging.info(f"Obtaining Business Environment data for {city_name}")
+	WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(3)")))
 	driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(3)").click()
 	extract_vars["(Cost) Minimum Wage Nonagri"] = driver.find_element(By.CSS_SELECTOR, "li:nth-child(1) > span").text.replace(',', '')
 	extract_vars["(Cost) Monthly Office Space Rental per sqm"] = driver.find_element(By.CSS_SELECTOR, "li:nth-child(2) > span").text
@@ -131,6 +132,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 
 	#  Digital Parameters table
 	logging.info(f"Obtaining Digital Parameters data for {city_name}")
+	WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(4)")))
 	driver.find_element(By.CSS_SELECTOR, ".filter-nav > li:nth-child(4)").click()
 	extract_vars["Open Innovation Ecosystem"] = driver.find_element(By.CSS_SELECTOR, "#digitalAccordion11 span").text
 	extract_vars["Number of Startups"] = driver.find_element(By.CSS_SELECTOR, "#digitalAccordion13 span").text
@@ -165,7 +167,8 @@ def preview(selected_province, mode):
 
 	url = f'http://www.digitalcitiesph.com/location-profiles/provinces/{province_name}/'
 
-	driver.get(url) 
+	driver.get(url)
+	driver.implicitly_wait(10) 
 	logging.info(f"Driver redirected to: {url}")
 	logging.info(f"Page title: {driver.title}")
 	try:
@@ -184,13 +187,13 @@ def preview(selected_province, mode):
 	# df = pd.DataFrame(columns=['province', 'city'])
  
 	# TALENT TABLE
-	talent_df = pd.DataFrame([], columns=['Province', 'City', 'Population'])
+	talent_df = pd.DataFrame([], columns=['Province', 'City', 'Population']).set_index('Province')
 	# INFRASTRUCTURE TABLE
-	infra_df = pd.DataFrame([], columns=['Province', 'City', 'Population'])
+	infra_df = pd.DataFrame([], columns=['Province', 'City', 'Population']).set_index('Province')
 	# BUSINESS ENVIRONMENT TABLE
-	business_df = pd.DataFrame([], columns=['Province', 'City', 'Population'])
+	business_df = pd.DataFrame([], columns=['Province', 'City', 'Population']).set_index('Province')
 	# DIGITAL PARAMETERS TABLE
-	digital_df = pd.DataFrame([], columns=['Province', 'City', 'Population'])
+	digital_df = pd.DataFrame([], columns=['Province', 'City', 'Population']).set_index('Province')
 	
  
 	if mode == "simple":
