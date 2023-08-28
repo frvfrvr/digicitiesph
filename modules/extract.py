@@ -5,7 +5,6 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-# from webdriver_manager.chrome import ChromeDriverManager 
 from chromedriver_py import binary_path
 import streamlit as st
 import pandas as pd
@@ -25,13 +24,6 @@ def use_driver():
 	chrome_options.add_argument('--disable-gpu')
 	chrome_options.add_argument('--ignore-ssl-errors=yes')
 	chrome_options.add_argument('--ignore-certificate-errors')
-
-	latest_chromium_ver = requests.get("https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_116").text
-
-	# url='https://googlechromelabs.github.io/chrome-for-testing/', 
-				# latest_release_url='https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_116'
-
-	# cdm = ChromeDriverManager(driver_version=latest_chromium_ver).install()
 	
 	driver = webdriver.Chrome(service=ChromeService(executable_path=binary_path), options=chrome_options) 
 
@@ -104,6 +96,7 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 		extract_vars["Number of Technical Vocational Institutions"] = driver.find_element(By.CSS_SELECTOR, "#talentAccordion7 span").text.replace(',', '')
 		extract_vars["Number of Schools offering Senior High"] = driver.find_element(By.CSS_SELECTOR, "#talentAccordion8 span").text.replace(',', '')
 	elif selected_mode == "advanced":
+		# Graduates of courses and other disciplines
 		pass
 
 	#  Infrastructure table
@@ -247,6 +240,7 @@ def preview(selected_province, mode):
 		digital_table = digital_df
 		logging.info(f"Finished extracting {selected_province}")
 	elif mode == "advanced":
+		# TODO: Additional table for Talent category
 		pass
 
 	driver.quit()

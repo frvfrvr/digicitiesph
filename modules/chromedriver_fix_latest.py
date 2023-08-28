@@ -1,8 +1,8 @@
 import json
 import requests
-from webdriver_manager.chrome import ChromeDriverManager 
+# from webdriver_manager.chrome import ChromeDriverManager 
 
-# Abandoned as of 2023 08 28
+# Abandoned as of 2023 08 28 thanks to chromedriver-py
 
 url = "https://googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build.json"
 response = requests.get(url)
