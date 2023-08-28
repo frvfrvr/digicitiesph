@@ -14,7 +14,6 @@ import io
 import time
 import requests
 
-@st.cache_data(persist=True)
 def use_driver():
 	## Setup chrome options
 	chrome_options = Options()
