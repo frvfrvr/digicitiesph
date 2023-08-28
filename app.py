@@ -50,6 +50,7 @@ def main():
                      """)
         
         if st.button('Preview', disabled=not preview_disabled, type='primary'):
+            st.info(f'Extracting data from {selected_province}, please wait...')
             talent_table, infra_table, business_table, digital_table = preview(selected_province, selected_mode.lower())
             
             talent_tab, infra_tab, business_tab, digital_tab = st.tabs(["Talent", "Infrastructure", "Business Environment", "Digital Parameters"])
