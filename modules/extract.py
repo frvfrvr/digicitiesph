@@ -69,8 +69,8 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 		w = WebDriverWait(driver, 30)
 		w.until(EC.title_contains(f"{city_name}"))
 		# w.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
+		logging.info(f"{city_name} Page load happened")
 	except TimeoutException:
-		print("Timeout happened no page load")
 		logging.info(f"{city_name} Timeout happened no page load")
 		# return talent_df, infra_df, business_df, digital_df
 	assert city_name in driver.title, f"Expected {city_name} in {driver.title}"
@@ -178,9 +178,9 @@ def preview(selected_province, mode):
 		w = WebDriverWait(driver, 8)
 		w.until(EC.title_contains(f"{selected_province}"))
 		# w.until(EC.presence_of_element_located((By.CLASS_NAME, 'municipality')))
-		print("Page load happened")
+		logging.info("Page load happened")
 	except TimeoutException:
-		print("Timeout happened no page load")
+		logging.info("Timeout happened no page load")
 	
 	assert selected_province in driver.title, f"Expected {selected_province} in {driver.title}"
 	# print(driver.title.split()[2:])
