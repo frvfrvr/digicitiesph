@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager 
+from webdriver_manager.core.utils import ChromeType
 import streamlit as st
 import pandas as pd
 import logging
@@ -27,7 +28,7 @@ def use_driver():
 	latest_chromium_ver = requests.get("https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_116").text
 
 	driver = webdriver.Chrome(service=ChromeService( 
-		ChromeDriverManager(version=latest_chromium_ver).install()), options=chrome_options) 
+		ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()), options=chrome_options) 
 
 	return driver
 
