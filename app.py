@@ -75,7 +75,7 @@ def main():
                 
             except Exception as e:
                 status_notif.error(
-                    f'The extractor broke down in the process, re-attempting extraction... What happened: {e}', icon="🚧")
+                    f'The extractor broke down in the process, re-attempting extraction while skipping errors... What happened: {e}', icon="🚧")
                 talent_table, infra_table, business_table, digital_table = preview(
                     selected_province, selected_mode.lower(), skip_error=skip_error)
 
