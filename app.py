@@ -35,7 +35,11 @@ def main():
     with tab1:
         preview_container = st.container()
         selected_mode_description = st.empty()
-        preview_disabled = st.checkbox("Check to ready the preview button")
+        check1, check2 = st.columns(2)
+        with check1:
+            preview_disabled = st.checkbox("Check to ready the preview button")
+        with check2:
+            skip_error = st.checkbox("Skip errors if you keep encountering issues (results in some empty cells)")
         
         # dropdown list of provinces
         selected_province = preview_container.selectbox(
@@ -50,7 +54,7 @@ def main():
             selected_mode_description.write("""
                      This mode extracts only general information about cities of selected province.
                      
-                     Talent table will include only total number of graduates of school levels (senior high school, technical vocational, higher education).
+                     Talent table will include only total number of graduates of school levels (senior high school, technical vocational, higher education) and number of institutions by school level.
                      """)
         elif selected_mode == "Advanced":
             selected_mode_description.write("""
@@ -61,10 +65,14 @@ def main():
         
         if st.button('Preview', disabled=not preview_disabled, type='primary'):
             status_notif = st.empty()
-            status_notif.info(f'Extracting data from {selected_province}, please wait...', icon="🔍")
-            start_time = time.time()
-            talent_table, infra_table, business_table, digital_table = preview(selected_province, selected_mode.lower())
-            status_notif.success(f'{selected_province} province {selected_mode} extraction finished! ({min_sec(start_time, time.time())})', icon="✅")
+            try:
+                status_notif.info(f'Extracting data from {selected_province}, please wait...', icon="🔍")
+                start_time = time.time()
+                talent_table, infra_table, business_table, digital_table = preview(selected_province, selected_mode.lower(), skip_error=skip_error)
+                status_notif.success(f'{selected_province} province {selected_mode} extraction finished! ({min_sec(start_time, time.time())})', icon="✅")
+            except Exception as e:
+                status_notif.exception(e)
+
             talent_tab, infra_tab, business_tab, digital_tab = st.tabs(["Talent", "Infrastructure", "Business Environment", "Digital Parameters"])
             
             with talent_tab:

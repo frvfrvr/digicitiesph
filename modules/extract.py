@@ -29,7 +29,7 @@ def use_driver():
 
 	return driver
 
-def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list):
+def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list, skip_error: bool):
 	"""_summary_
 
 	Args:
@@ -64,8 +64,11 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 		# w.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
 		logging.info(f"{city_name} Page load happened")
 	except TimeoutException:
-		logging.info(f"{city_name} Timeout happened no page load")
-		# return talent_df, infra_df, business_df, digital_df
+		if skip_error:
+			logging.info(f"{city_name} skipped! Timeout happened no page load")
+			return talent_df, infra_df, business_df, digital_df
+		else:
+			logging.info(f"{city_name} error! Timeout happened no page load")
 	assert city_name in driver.title, f"Expected {city_name} in {driver.title}"
 	logging.info(f"Driver redirected to: (Title: {driver.title}) http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/")
 	#  obtain population by XPATH
@@ -152,8 +155,8 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	return talent_df, infra_df, business_df, digital_df
 
 @st.cache_data()
-def preview(selected_province, mode):
-	logging.info("Preview started")
+def preview(selected_province, mode, skip_error: bool):
+	logging.info(f"Preview started {'(Skipping errors)' if skip_error else ''}")
 	driver = use_driver()
 
 	# province_name for URL use
@@ -229,10 +232,9 @@ def preview(selected_province, mode):
 			
 		# Create a list of all the cities from df
 		cities = talent_df['City'].tolist()
-		for city_name in cities:
-			logging.info(f"Next iteration: {city_name}")
-			talent_df, infra_df, business_df, digital_df = scrape_each_city(city_name, driver, mode, [talent_df, infra_df, business_df, digital_df], [talent_columns, infra_columns, business_columns, digital_columns])
-		
+		for n, city_name in enumerate(cities):
+			logging.info(f"{n}/{len(cities)} iteration: {city_name}")
+			talent_df, infra_df, business_df, digital_df = scrape_each_city(city_name, driver, mode, [talent_df, infra_df, business_df, digital_df], [talent_columns, infra_columns, business_columns, digital_columns], skip_error=skip_error)
 
 		talent_table = talent_df
 		infra_table = infra_df
@@ -250,7 +252,7 @@ def preview(selected_province, mode):
 
 @st.cache_data()
 def extract(selected_province, mode: str, filetype: str):
-	logging.info(f"{selected_province} {filetype} {mode} Extraction started")
+	logging.info(f"{selected_province} {filetype} {mode} Export started")
 	talent_df, infra_df, business_df, digital_df = preview(selected_province, mode)
 	dfs = [talent_df, infra_df, business_df, digital_df]
 	table_names = ["Talent", "Infrastructure", "Business Environment", "Digital Parameters"]
@@ -266,6 +268,7 @@ def extract(selected_province, mode: str, filetype: str):
 		for i, df in enumerate(dfs):
 			zip_file.writestr(f"{table_names[i]}.csv", csv_bytes)
 		zip_file.close()
+		logging.info(f"{selected_province} {filetype} {mode} Export Ready")
 		return zip_file
 	elif filetype.lower() == "excel":
 		buffer = io.BytesIO()
@@ -277,6 +280,7 @@ def extract(selected_province, mode: str, filetype: str):
 		writer.close()
 
 		file_object = buffer.getvalue()
+		logging.info(f"{selected_province} {filetype} {mode} Export Ready")
 		return file_object
 
 def multitest():

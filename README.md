@@ -12,6 +12,7 @@ A Streamlit web app that extracts the profile of cities of the Philippines from 
 * [X] Simple Extraction Mode (general details)
 * [ ] Advanced Extraction Mode (more details)
 * [X] Post elapsed time on successful extraction
+* [X] Skip error button in preview tab when encoutering issues
 
 # Screenshot
 
@@ -19,5 +20,5 @@ A Streamlit web app that extracts the profile of cities of the Philippines from 
 
 # Benchmark Test
 
-* Select provinces "Batanes" or "Guimaras" for short benchmark test
-* Select provinces "Bohol" or "Cebu" for long benchmark test
+* Select provinces "Batanes" or "Guimaras" for short benchmark test (provinces with least cities/municipalities)
+* Select provinces "Bohol" or "Cebu" for long benchmark test (provinces with most cities/municipalities)
