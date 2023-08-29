@@ -77,7 +77,7 @@ def main():
                 status_notif.error(
                     f'The extractor broke down in the process, re-attempting extraction while skipping errors... What happened: {e}', icon="🚧")
                 talent_table, infra_table, business_table, digital_table = preview(
-                    selected_province, selected_mode.lower(), skip_error=skip_error)
+                    selected_province, selected_mode.lower(), skip_error=True)
 
             status_notif.success(
                     f'{selected_province} province {selected_mode} extraction finished! ({min_sec(start_time, time.time())}). The data is ready to export, please proceed to 🚚 Export tab', icon="✅")
