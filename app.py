@@ -38,7 +38,6 @@ def main():
     with tab1:
         preview_container = st.container()
         selected_mode_description = st.empty()
-        skip_error = False
         preview_disabled = st.checkbox(
             "**Check to ready the preview button**")
 
@@ -71,15 +70,10 @@ def main():
             start_time = time.time()
             try:
                 talent_table, infra_table, business_table, digital_table = preview(
-                    selected_province, selected_mode.lower(), skip_error=False)
-                
+                    selected_province, selected_mode.lower())
             except Exception as e:
                 status_notif.error(
-                    f'The extractor broke down in the process, re-attempting extraction while skipping errors... What happened: {e}', icon="🚧")
-                time.sleep(5)
-                talent_table, infra_table, business_table, digital_table = preview(
-                    selected_province, selected_mode.lower(), skip_error=True)
-                skip_error = True
+                    f'The extractor broke down in the process, please try again later... What happened: {e}', icon="🚧")
 
             status_notif.success(
                     f'{selected_province} province {selected_mode} extraction finished! ({min_sec(start_time, time.time())}). The data is ready to export, please proceed to 🚚 Export tab', icon="✅")
@@ -144,7 +138,7 @@ def main():
                     else:
                         # export data
                         exported_file = export(selected_province, selected_mode.lower(
-                        ), selected_filetype.lower(), skip_error)
+                        ), selected_filetype.lower())
                         st.success('Export successful!')
                         st.download_button(label=f"Download {'Zip File' if selected_mode.lower() == 'csv' else 'Excel File'}",
                                            data=exported_file, file_name=f"output.{'zip' if selected_mode.lower() == 'csv' else 'xlsx'}")

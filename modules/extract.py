@@ -29,7 +29,7 @@ def use_driver():
 	
 	return driver
 
-def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list, skip_error: bool):
+def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list):
 	"""_summary_
 
 	Args:
@@ -64,12 +64,12 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 		# w.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".filter-nav > li:nth-child(1)")))
 		logging.info(f"{city_name} Page load happened")
 	except TimeoutException:
-		if skip_error:
-			logging.info(f"{city_name} skipped! Timeout happened no page load ({driver.title}) ({driver.current_url})")
-			return talent_df, infra_df, business_df, digital_df
-		else:
-			logging.info(f"{city_name} error! Timeout happened no page load ({driver.title}) ({driver.current_url})")
-	assert city_name in driver.title, f"Expected {city_name} in {driver.title}"
+		logging.info(f"{city_name} skipped! Timeout happened no page load ({driver.title}) ({driver.current_url})")
+		return talent_df, infra_df, business_df, digital_df
+	try:
+		assert city_name in driver.title, f"Expected {city_name} in {driver.title}"
+	except:
+		return talent_df, infra_df, business_df, digital_df
 	logging.info(f"Driver redirected to: (Title: {driver.title}) http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/")
 	#  obtain population by XPATH
 	logging.info(f"Obtaining population data for {city_name}")
@@ -155,8 +155,8 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 	return talent_df, infra_df, business_df, digital_df
 
 @st.cache_data()
-def preview(selected_province, mode, skip_error: bool):
-	logging.info(f"Preview started {'(Skipping errors)' if skip_error else ''}")
+def preview(selected_province, mode):
+	logging.info(f"Preview started")
 	driver = use_driver()
 
 	# province_name for URL use
@@ -234,7 +234,7 @@ def preview(selected_province, mode, skip_error: bool):
 		cities = talent_df['City'].tolist()
 		for n, city_name in enumerate(cities):
 			logging.info(f"{n + 1}/{len(cities)} iteration: {city_name}")
-			talent_df, infra_df, business_df, digital_df = scrape_each_city(city_name, driver, mode, [talent_df, infra_df, business_df, digital_df], [talent_columns, infra_columns, business_columns, digital_columns], skip_error=skip_error)
+			talent_df, infra_df, business_df, digital_df = scrape_each_city(city_name, driver, mode, [talent_df, infra_df, business_df, digital_df], [talent_columns, infra_columns, business_columns, digital_columns])
 
 		talent_table = talent_df
 		infra_table = infra_df
@@ -251,9 +251,9 @@ def preview(selected_province, mode, skip_error: bool):
 
 
 @st.cache_data()
-def export(selected_province, mode: str, filetype: str, skip_error: bool):
+def export(selected_province, mode: str, filetype: str):
 	logging.info(f"{selected_province} {filetype} {mode} Export started")
-	talent_df, infra_df, business_df, digital_df = preview(selected_province, mode, skip_error=skip_error)
+	talent_df, infra_df, business_df, digital_df = preview(selected_province, mode)
 	dfs = [talent_df, infra_df, business_df, digital_df]
 	table_names = ["Talent", "Infrastructure", "Business Environment", "Digital Parameters"]
 
