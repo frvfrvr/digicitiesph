@@ -26,7 +26,7 @@ def use_driver():
 	chrome_options.add_argument('--ignore-certificate-errors')
 	
 	driver = webdriver.Chrome(service=ChromeService(executable_path=binary_path), options=chrome_options) 
-
+	
 	return driver
 
 def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list, skip_error: bool):
@@ -65,10 +65,10 @@ def scrape_each_city(city_name: str, driver, mode: str, dfs: list, columns: list
 		logging.info(f"{city_name} Page load happened")
 	except TimeoutException:
 		if skip_error:
-			logging.info(f"{city_name} skipped! Timeout happened no page load")
+			logging.info(f"{city_name} skipped! Timeout happened no page load ({driver.title}) ({driver.current_url})")
 			return talent_df, infra_df, business_df, digital_df
 		else:
-			logging.info(f"{city_name} error! Timeout happened no page load")
+			logging.info(f"{city_name} error! Timeout happened no page load ({driver.title}) ({driver.current_url})")
 	assert city_name in driver.title, f"Expected {city_name} in {driver.title}"
 	logging.info(f"Driver redirected to: (Title: {driver.title}) http://www.digitalcitiesph.com/location-profiles/cities/{city_name_URL}/")
 	#  obtain population by XPATH
@@ -233,7 +233,7 @@ def preview(selected_province, mode, skip_error: bool):
 		# Create a list of all the cities from df
 		cities = talent_df['City'].tolist()
 		for n, city_name in enumerate(cities):
-			logging.info(f"{n}/{len(cities)} iteration: {city_name}")
+			logging.info(f"{n + 1}/{len(cities)} iteration: {city_name}")
 			talent_df, infra_df, business_df, digital_df = scrape_each_city(city_name, driver, mode, [talent_df, infra_df, business_df, digital_df], [talent_columns, infra_columns, business_columns, digital_columns], skip_error=skip_error)
 
 		talent_table = talent_df
