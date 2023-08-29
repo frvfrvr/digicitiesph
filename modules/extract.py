@@ -251,9 +251,9 @@ def preview(selected_province, mode, skip_error: bool):
 
 
 @st.cache_data()
-def extract(selected_province, mode: str, filetype: str):
+def export(selected_province, mode: str, filetype: str, skip_error: bool):
 	logging.info(f"{selected_province} {filetype} {mode} Export started")
-	talent_df, infra_df, business_df, digital_df = preview(selected_province, mode)
+	talent_df, infra_df, business_df, digital_df = preview(selected_province, mode, skip_error=skip_error)
 	dfs = [talent_df, infra_df, business_df, digital_df]
 	table_names = ["Talent", "Infrastructure", "Business Environment", "Digital Parameters"]
 

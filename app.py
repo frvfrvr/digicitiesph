@@ -1,4 +1,4 @@
-from modules.extract import preview, extract
+from modules.extract import preview, export
 import streamlit as st
 import datetime
 import time
@@ -26,9 +26,9 @@ def main():
                 """
     })
     
-    st.title('DigiCitiesPH')
+    st.title('🏙 DigiCitiesPH')
     st.write('A web app that extracts the profile of cities of the Philippines from the website [Digital Cities PH](https://www.digitalcitiesph.com/).')
-    st.info('**Tip:** For faster preview and extraction (cached after preview), choose a province with fewer cities in Simple mode.', icon="💡")
+    st.info('**Tip:** For faster preview and export (cached after preview), choose a province with fewer cities in Simple mode.', icon="💡")
     
     tab1, tab2 = st.tabs(["⛏ Extract", "🚚 Export"])
     
@@ -37,9 +37,9 @@ def main():
         selected_mode_description = st.empty()
         check1, check2 = st.columns(2)
         with check1:
-            preview_disabled = st.checkbox("Check to ready the preview button")
+            preview_disabled = st.checkbox("**Check to ready the preview button**")
         with check2:
-            skip_error = st.checkbox("Skip errors if you keep encountering issues (results in some empty cells)")
+            skip_error = st.checkbox("*Skip errors if you keep encountering issues (results in some empty cells)*")
         
         # dropdown list of provinces
         selected_province = preview_container.selectbox(
@@ -60,33 +60,36 @@ def main():
             selected_mode_description.write("""
                      This mode extracts general information and more details of cities of selected province. 
                      
-                     Talent table will include not only total number of graduates of school levels but also graduates of specific fields and specializations.
+                     Talent table will include not only total number of graduates of school levels but also graduates of specific fields and specializations, and number of institutions by school level.
                      """)
         
         if st.button('Preview', disabled=not preview_disabled, type='primary'):
             status_notif = st.empty()
+            emoji_warning = st.empty()
+            status_notif.info(f'Extracting data from {selected_province}, please wait...', icon="🔍")
             try:
-                status_notif.info(f'Extracting data from {selected_province}, please wait...', icon="🔍")
                 start_time = time.time()
                 talent_table, infra_table, business_table, digital_table = preview(selected_province, selected_mode.lower(), skip_error=skip_error)
-                status_notif.success(f'{selected_province} province {selected_mode} extraction finished! ({min_sec(start_time, time.time())})', icon="✅")
+                status_notif.success(f'{selected_province} province {selected_mode} extraction finished! ({min_sec(start_time, time.time())})\nThe data is ready to export, please proceed to 🚚 Export tab', icon="✅")
             except Exception as e:
-                status_notif.exception(e)
-
+                status_notif.error(f'The extractor broke down in the process, please try again in few minutes. {e}', icon="🚧")
             talent_tab, infra_tab, business_tab, digital_tab = st.tabs(["Talent", "Infrastructure", "Business Environment", "Digital Parameters"])
-            
-            with talent_tab:
-                # display talent_table dataframe in streamlit
-                st.dataframe(talent_table, use_container_width=True)
+            try:
+                with talent_tab:
+                    # display talent_table dataframe in streamlit
+                    st.dataframe(talent_table, use_container_width=True)
+                    
+                with infra_tab:
+                    st.dataframe(infra_table, use_container_width=True)
+                    
+                with business_tab:
+                    st.dataframe(business_table, use_container_width=True)
+                    
+                with digital_tab:
+                    st.dataframe(digital_table, use_container_width=True)
+            except:
+                emoji_warning.markdown("# 🚧")
                 
-            with infra_tab:
-                st.dataframe(infra_table, use_container_width=True)
-                
-            with business_tab:
-                st.dataframe(business_table, use_container_width=True)
-                
-            with digital_tab:
-                st.dataframe(digital_table, use_container_width=True)
     
     with tab2:
         col1, col2 = st.columns(2)
@@ -114,19 +117,19 @@ def main():
                     Tables will be {'separated by `.csv` files (CSV) in zipped file' if selected_filetype == 'CSV' else 'worksheets in single `.xlsx` file (Excel)'}
                     """)
             
-            with st.expander('Extract'):
+            with st.expander('Export'):
                 'Are you sure about that?'
-                confirm_extract = st.text_input('Name of selected province:', placeholder=selected_province)
+                confirm_export = st.text_input('Name of selected province:', placeholder=selected_province)
                 
                 if st.button('Yes'):
                     
-                    if confirm_extract != selected_province:
+                    if confirm_export != selected_province:
                         st.error('Province name does not match. Please try again.')
                     else:
-                        # extract data
-                        extracted_file = extract(selected_province, selected_mode.lower(), selected_filetype.lower())
-                        st.success('Extraction successful!')
-                        st.download_button(label=f"Download {'Zip File' if selected_mode.lower() == 'csv' else 'Excel File'}", data=extracted_file, file_name=f"output.{'zip' if selected_mode.lower() == 'csv' else 'xlsx'}")
+                        # export data
+                        exported_file = export(selected_province, selected_mode.lower(), selected_filetype.lower(), skip_error)
+                        st.success('Export successful!')
+                        st.download_button(label=f"Download {'Zip File' if selected_mode.lower() == 'csv' else 'Excel File'}", data=exported_file, file_name=f"output.{'zip' if selected_mode.lower() == 'csv' else 'xlsx'}")
                 
     st.markdown('''<hr>''', unsafe_allow_html=True)
     st.markdown('''<small>Support by giving [**this app**](https://github.com/frvfrvr/digicitiesph) a ⭐ and follow the [**developer on GitHub**](https://github.com/frvfrvr) for more apps like this. Thank you.</small>''', unsafe_allow_html=True)
