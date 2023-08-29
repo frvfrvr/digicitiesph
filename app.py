@@ -38,6 +38,7 @@ def main():
     with tab1:
         preview_container = st.container()
         selected_mode_description = st.empty()
+        skip_error = False
         preview_disabled = st.checkbox(
             "**Check to ready the preview button**")
 
@@ -65,7 +66,6 @@ def main():
 
         if st.button('Preview', disabled=not preview_disabled, type='primary'):
             status_notif = st.empty()
-            emoji_warning = st.empty()
             status_notif.info(
                 f'Extracting data from {selected_province}, please wait...', icon="🔍")
             start_time = time.time()
@@ -76,8 +76,10 @@ def main():
             except Exception as e:
                 status_notif.error(
                     f'The extractor broke down in the process, re-attempting extraction while skipping errors... What happened: {e}', icon="🚧")
+                time.sleep(5)
                 talent_table, infra_table, business_table, digital_table = preview(
                     selected_province, selected_mode.lower(), skip_error=True)
+                skip_error = True
 
             status_notif.success(
                     f'{selected_province} province {selected_mode} extraction finished! ({min_sec(start_time, time.time())}). The data is ready to export, please proceed to 🚚 Export tab', icon="✅")
