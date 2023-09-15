@@ -2,6 +2,16 @@
 
 A Streamlit web app that extracts the profile of cities of the Philippines from the website Digital Cities PH.
 
+```mermaid
+flowchart TD
+    A([User]) --> B[Streamlit App]
+    B --> C[Selenium]
+    C -- extracts each city data\nof province from --> D[(Digital Cities PH\n Website)] 
+    D -- transforms each city data\n to respective categories in tables --> E[Pandas]
+    E -- load the tables for preview --> B
+
+```
+
 # Features
 
 * [X] Select one of 81-82 provinces of the Philippines and extract the Talent, Infrastructure, Business Environment and Digital Parameter data of all the cities/municipalities under it.
